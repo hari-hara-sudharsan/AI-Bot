@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <meta charset="UTF-8">
   <title>AI Coding & DSA Bot</title>
 </head>
 <body>
@@ -13,14 +14,14 @@
   <script>
     async function askAI() {
       const question = document.getElementById("question").value.trim();
-      const answerElement = document.getElementById("answer");
+      const answerEl = document.getElementById("answer");
 
       if (!question) {
-        answerElement.textContent = "⚠ Please enter a question.";
+        answerEl.textContent = "❌ Please enter a question.";
         return;
       }
 
-      answerElement.textContent = "⏳ Thinking...";
+      answerEl.textContent = "⏳ Waiting for AI response...";
 
       try {
         const response = await fetch("https://ai-bot-one-phi.vercel.app/api/ask", {
@@ -29,12 +30,17 @@
           body: JSON.stringify({ question })
         });
 
+        if (!response.ok) {
+          throw new Error(`HTTP error ${response.status}`);
+        }
+
         const data = await response.json();
-        answerElement.textContent = data.answer || `⚠ Error: ${data.error}`;
+        answerEl.textContent = data.answer || `❌ Error: ${data.error || "Unknown error"}`;
       } catch (err) {
-        answerElement.textContent = "❌ Connection error. Please try again.";
+        answerEl.textContent = `❌ Connection error: ${err.message}`;
       }
     }
   </script>
 </body>
 </html>
+
