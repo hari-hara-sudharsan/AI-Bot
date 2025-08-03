@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>AI Coding & DSA Bot</title>
+</head>
+<body>
+  <h1>Ask the AI Bot</h1>
+  <textarea id="question" placeholder="Type your coding or DSA question"></textarea><br><br>
+  <button onclick="askAI()">Ask</button>
+  <h3>Answer:</h3>
+  <pre id="answer"></pre>
+
+  <script>
+    async function askAI() {
+      const question = document.getElementById("question").value;
+      const response = await fetch("/api/ask", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ question })
+      });
+      const data = await response.json();
+      document.getElementById("answer").textContent = data.answer || data.error;
+    }
+  </script>
+</body>
+</html>
