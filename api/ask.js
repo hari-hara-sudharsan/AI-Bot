@@ -1,3 +1,5 @@
+import OpenAI from "openai";
+
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
@@ -9,26 +11,26 @@ export default async function handler(req, res) {
   }
 
   try {
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
-      },
-      body: JSON.stringify({
-        model: "gpt-4o-mini",
-        messages: [
-          { role: "system", content: "You are a helpful tutor for coding and DSA questions." },
-          { role: "user", content: question },
-        ],
-        max_tokens: 500,
-      }),
+    const openai = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY, // Your OpenAI key in Vercel env
     });
 
-    const data = await response.json();
-    res.status(200).json({ answer: data.choices[0].message.content });
+    const completion = await openai.chat.completions.create({
+      model: "gpt-4o-mini", // Fast + good for coding
+      messages: [
+        {
+          role: "system",
+          content: "You are a helpful AI tutor for coding and DSA questions. Explain step-by-step with examples.",
+        },
+        { role: "user", content: question },
+      ],
+      max_tokens: 500,
+    });
+
+    res.status(200).json({ answer: completion.choices[0].message.content });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 }
+
 
