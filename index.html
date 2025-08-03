@@ -12,17 +12,29 @@
 
   <script>
     async function askAI() {
-      const question = document.getElementById("question").value;
-      const response = await fetch("https://ai-bot-one-phi.vercel.app/api/ask", {
+      const question = document.getElementById("question").value.trim();
+      const answerElement = document.getElementById("answer");
 
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ question })
-      });
-      const data = await response.json();
-      document.getElementById("answer").textContent = data.answer || data.error;
+      if (!question) {
+        answerElement.textContent = "⚠ Please enter a question.";
+        return;
+      }
+
+      answerElement.textContent = "⏳ Thinking...";
+
+      try {
+        const response = await fetch("https://ai-bot-one-phi.vercel.app/api/ask", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ question })
+        });
+
+        const data = await response.json();
+        answerElement.textContent = data.answer || `⚠ Error: ${data.error}`;
+      } catch (err) {
+        answerElement.textContent = "❌ Connection error. Please try again.";
+      }
     }
   </script>
 </body>
 </html>
-
